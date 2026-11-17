@@ -4,7 +4,7 @@ Curso de Bases de Datos · Proyecto grupal · Entrega: 22/11/2026, 23:59 (`.zip`
 
 ## Integrantes
 
-- @lacasaautista
+- Luis
 - P1
 - P2
 
