@@ -30,13 +30,13 @@ Siguen el orden del enunciado: esquema, datos de prueba, roles y RLS, procedimie
 
 | Archivo | Contenido | Responsable |
 |---|---|---|
-| `01_esquema.sql` | Esquema normalizado (3FNBC): tablas, PK, FK, CHECK, UNIQUE y NOT NULL | @lacasaautista |
-| `02_datos_prueba.sql` | Datos de prueba | @lacasaautista |
+| `01_esquema.sql` | Esquema normalizado (3FNBC): tablas, PK, FK, CHECK, UNIQUE y NOT NULL | Luis |
+| `02_datos_prueba.sql` | Datos de prueba | Luis |
 | `03_roles_rbac.sql` | Roles, usuarios de prueba y permisos (GRANT/REVOKE) | P1 |
 | `04_politicas_rls.sql` | Seguridad a nivel de fila por almacén | P1 |
 | `05_reportes.sql` | `sp_reporte_valoracion_reabastecimiento` y `sp_reporte_rotacion_inventario` | P2 |
 | `06_rutinas_transaccionales.sql` | Venta y despacho (checkout) y transferencia entre almacenes | P1 |
-| `07_pruebas_db_admin.sql` | Pruebas 1 a 6 | @lacasaautista |
+| `07_pruebas_db_admin.sql` | Pruebas 1 a 6 | Luis |
 | `08_pruebas_inventory_manager.sql` | Pruebas 7 a 10 | P1 |
 | `09_pruebas_auditor.sql` | Pruebas 11 a 15 | P2 |
 
