@@ -1,0 +1,9 @@
+# Windows
+Thumbs.db
+desktop.ini
+
+# Archivos temporales de Word/Excel
+~$*
+
+# El .zip de la entrega se sube aparte, no al repositorio
+*.zip
