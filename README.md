@@ -1,12 +1,12 @@
 # Proyecto III — Auditoría y rediseño de la base de datos de inventarios de Petit Monde
 
-Curso de Bases de Datos · Proyecto grupal · Entrega: 22/11/2026, 23:59 (`.zip` con el PDF y el `.sql`)
+Curso de Bases de Datos · Proyecto grupal · Entrega: 29/11/2026, 23:59 (`.zip` con el PDF y el `.sql`)
 
 ## Integrantes
 
 - Luis
-- P1
-- P2
+- Winston
+- Vinicio
 
 ## Tecnologías
 
@@ -32,13 +32,13 @@ Siguen el orden del enunciado: esquema, datos de prueba, roles y RLS, procedimie
 |---|---|---|
 | `01_esquema.sql` | Esquema normalizado (3FNBC): tablas, PK, FK, CHECK, UNIQUE y NOT NULL | Luis |
 | `02_datos_prueba.sql` | Datos de prueba | Luis |
-| `03_roles_rbac.sql` | Roles, usuarios de prueba y permisos (GRANT/REVOKE) | P1 |
-| `04_politicas_rls.sql` | Seguridad a nivel de fila por almacén | P1 |
-| `05_reportes.sql` | `sp_reporte_valoracion_reabastecimiento` y `sp_reporte_rotacion_inventario` | P2 |
-| `06_rutinas_transaccionales.sql` | Venta y despacho (checkout) y transferencia entre almacenes | P1 |
+| `03_roles_rbac.sql` | Roles (incluido el rol operativo de la prueba 10), usuarios de prueba y permisos (GRANT/REVOKE) | Winston |
+| `04_politicas_rls.sql` | Seguridad a nivel de fila por almacén | Winston |
+| `05_reportes.sql` | `sp_ReporteRotacionInventario` (Reporte 1) y `sp_reporte_rotacion_inventario` (Reporte 2) | Vinicio |
+| `06_rutinas_transaccionales.sql` | Venta y despacho (checkout) y transferencia entre almacenes | Winston |
 | `07_pruebas_db_admin.sql` | Pruebas 1 a 6 | Luis |
-| `08_pruebas_inventory_manager.sql` | Pruebas 7 a 10 | P1 |
-| `09_pruebas_auditor.sql` | Pruebas 11 a 15 | P2 |
+| `08_pruebas_inventory_manager.sql` | Pruebas 7 a 10 | Winston |
+| `09_pruebas_auditor.sql` | Pruebas 11 a 15 | Vinicio |
 
 ## Cómo ejecutar
 
