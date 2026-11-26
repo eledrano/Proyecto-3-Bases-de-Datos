@@ -15,8 +15,7 @@ BEGIN
     END LOOP;
 END $$;
 
--- Atributos (se reaplican en cada ejecución para que el script converja)
--- db_admin: administra roles y puede saltarse el RLS (bypass autorizado).
+
 ALTER ROLE db_admin          NOLOGIN NOSUPERUSER NOCREATEDB CREATEROLE   BYPASSRLS;
 ALTER ROLE inventory_manager NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOBYPASSRLS;
 ALTER ROLE auditor           NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOBYPASSRLS;
@@ -29,7 +28,6 @@ COMMENT ON ROLE operador          IS 'Operativo (cajero/ventas): solo registra v
 
 -- ---------------------------------------------------------------------
 -- 2. USUARIOS DE PRUEBA (LOGIN) Y MEMBRESÍAS
---    Las contraseñas son solo para el entorno académico.
 -- ---------------------------------------------------------------------
 DO $$
 DECLARE
@@ -57,9 +55,8 @@ GRANT inventory_manager TO usr_gestor_central, usr_gestor_norte;
 GRANT auditor           TO usr_auditor;
 GRANT operador          TO usr_operador;
 
--- Sin superusuario: quien corre el script necesita poder hacer SET ROLE a cada
--- rol y usuario para ejecutar las pruebas (7 a 15). Un superusuario ya puede.
--- En PostgreSQL 16+ se concede solo SET (sin heredar privilegios).
+
+
 DO $$
 DECLARE
     x text;
@@ -79,10 +76,8 @@ END $$;
 
 -- ---------------------------------------------------------------------
 -- 3. PROPIEDAD DE LOS OBJETOS: todo pasa a db_admin
---    (el dueño de una tabla se salta el RLS; los demás roles NO son dueños)
 -- ---------------------------------------------------------------------
--- Sin superusuario, para cambiar el dueño hay que poder hacer SET ROLE db_admin
--- y db_admin debe tener CREATE en la base de datos.
+
 DO $$
 BEGIN
     IF NOT (SELECT rolsuper FROM pg_roles WHERE rolname = current_user) THEN
@@ -116,8 +111,7 @@ END $$;
 -- ---------------------------------------------------------------------
 -- 4. DENEGAR POR DEFECTO: quitar todo a PUBLIC
 -- ---------------------------------------------------------------------
--- Base de datos: solo los roles del proyecto se conectan; TEMPORARY se
--- conserva porque los reportes usan tablas temporales con el rol que los ejecuta.
+
 DO $$
 BEGIN
     EXECUTE format('REVOKE ALL ON DATABASE %I FROM PUBLIC', current_database());
@@ -131,8 +125,7 @@ REVOKE ALL    ON ALL TABLES    IN SCHEMA inventario FROM PUBLIC;
 REVOKE ALL    ON ALL SEQUENCES IN SCHEMA inventario FROM PUBLIC;
 REVOKE ALL    ON ALL FUNCTIONS IN SCHEMA inventario FROM PUBLIC;
 
--- En PostgreSQL toda función nueva es ejecutable por PUBLIC. Este REVOKE evita
--- que las funciones creadas después (reportes y rutinas) queden abiertas.
+
 ALTER DEFAULT PRIVILEGES FOR ROLE db_admin REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
 ALTER DEFAULT PRIVILEGES                   REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;  -- rol que ejecuta los scripts
 
@@ -142,10 +135,6 @@ REVOKE ALL ON ALL SEQUENCES IN SCHEMA inventario FROM inventory_manager, auditor
 
 -- ---------------------------------------------------------------------
 -- 5. VISTAS DE CONSULTA
---    security_invoker = true: la vista se evalúa con los privilegios y el RLS
---    de quien la consulta (REQUIERE PostgreSQL 15 o superior). Sin esta opción la vista
---    correría como su dueño (db_admin, BYPASSRLS) y filtraría datos de otros almacenes.
---    No exponen datos de proveedores y NO se otorgan al rol operador (muestran costos).
 -- ---------------------------------------------------------------------
 CREATE OR REPLACE VIEW inventario.v_stock_detallado
 WITH (security_invoker = true) AS
@@ -225,9 +214,7 @@ GRANT USAGE, SELECT ON SEQUENCE
       TO inventory_manager;
 
 -- 6.4 auditor: solo lectura de todo el esquema.
---     Única escritura: añadir filas a su propia bitácora de reportes (INSERT,
---     sin UPDATE/DELETE), necesaria para que sp_reporte_rotacion_inventario
---     deje trazabilidad. No puede modificar ningún dato operativo.
+
 GRANT SELECT ON ALL TABLES IN SCHEMA inventario TO auditor;
 GRANT INSERT ON inventario.bitacora_reporte TO auditor;
 GRANT USAGE, SELECT ON SEQUENCE inventario.bitacora_reporte_bitacora_id_seq TO auditor;
@@ -258,19 +245,6 @@ END $$;
 
 -- ---------------------------------------------------------------------
 -- 7. PERMISOS DE EJECUCIÓN DE FUNCIONES (reportes y rutinas)
---    Las funciones no existen aún cuando corre este script. Esta función aplica
---    el mapa de permisos a las que existan y se invoca de nuevo al final de los
---    scripts 05 y 06.
---
---    Mapa de EXECUTE (todas: REVOKE a PUBLIC y dueño db_admin):
---      sp_reporte_valoracion_reabastecimiento -> db_admin, inventory_manager
---      sp_reporte_rotacion_inventario         -> db_admin, inventory_manager, auditor
---      sp_procesar_venta  (Rutina 1)          -> db_admin, inventory_manager, operador
---      sp_transferir_inventario (Rutina 2)    -> db_admin, inventory_manager
---      fn_rls_*  (funciones de apoyo de RLS)  -> los cuatro roles
---      cualquier otra función                 -> solo db_admin
---    Todas deben ser SECURITY INVOKER (valor por defecto) para que el RLS
---    filtre con la identidad de quien las ejecuta.
 -- ---------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION inventario.aplicar_permisos_rutinas()
 RETURNS void
@@ -318,7 +292,6 @@ SELECT inventario.aplicar_permisos_rutinas();
 
 -- ---------------------------------------------------------------------
 -- 8. VERIFICACIÓN (genera la matriz RBAC real para el documento)
---    X = privilegio de tabla completo | cols = solo algunas columnas | - = ninguno
 -- ---------------------------------------------------------------------
 SELECT r.rol,
        t.objeto,
